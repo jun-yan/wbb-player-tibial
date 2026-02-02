@@ -1,0 +1,179 @@
+---
+title: "External Load Research Questions and Statistical Analysis"
+format: html
+execute:
+  echo: false
+  warning: false
+  message: false
+---
+
+## Data Structure and Notation
+
+The unit of analysis is the **athlete–week**.
+
+Indices:
+
+- $i = 1, \dots, 10$ indexes athletes
+- $t = 1, \dots, 10$ indexes weeks
+
+Observed variables:
+
+- $\text{PL}_{it}$: weekly average **PlayerLoad** for athlete $i$ in week $t$
+- $\text{TIL}_{it}$: weekly average **total tibial impact load**
+  (left + right tibia)
+- $\text{TIL}_{R,it}$, $\text{TIL}_{L,it}$: right and left tibial impact load
+- $t$: week number (season time)
+
+Athlete-specific means are denoted by
+
+- $\bar{\text{PL}}_i$
+- $\bar{\text{TIL}}_i$
+
+Missingness is sparse and unbalanced across athlete–weeks, and one
+athlete–week (Athlete 10, Week 10) is potentially influential.
+
+---
+
+## Research Questions and Statistical Methods
+
+### Research Question 1: Within-athlete concordance
+
+**Do PlayerLoad and total tibial impact load track together over time within
+athletes?**
+
+This question evaluates whether week-to-week changes in a global workload
+metric correspond to week-to-week changes in a segment-specific loading
+metric for the same athlete.
+
+**Statistical analysis.**  
+PlayerLoad and tibial impact load were centered within athlete:
+$$
+\text{PL}_{it}^\ast = \text{PL}_{it} - \bar{\text{PL}}_i,
+\qquad
+\text{TIL}_{it}^\ast = \text{TIL}_{it} - \bar{\text{TIL}}_i.
+$$
+
+Within-athlete concordance was quantified by estimating the association
+between $\text{PL}_{it}^\ast$ and $\text{TIL}_{it}^\ast$ using:
+
+- a within-athlete correlation, and
+- an equivalent regression slope from a no-intercept model applied to the
+  centered variables.
+
+**Uncertainty quantification.**  
+Confidence intervals can be obtained via **athlete-level bootstrap
+resampling**, resampling athletes with all associated weeks.
+
+---
+
+### Research Question 2: Temporal stability
+
+**Is the association between PlayerLoad and tibial impact load stable across
+the season?**
+
+This question examines whether PlayerLoad serves as a consistent proxy for
+tibial loading over time.
+
+**Statistical analysis.**  
+A longitudinal model was fitted with tibial impact load as the outcome:
+$$
+\text{TIL}_{it}
+=
+\alpha_i
++
+\beta \, \text{PL}_{it}^\ast
++
+f(t)
++
+\varepsilon_{it},
+$$
+where $\alpha_i$ denotes athlete-specific intercepts and $f(t)$ represents
+week effects capturing season-level trends.
+
+Temporal stability was assessed by allowing the PlayerLoad effect to vary by
+season phase or by including an interaction term
+$\text{PL}_{it}^\ast \times t$.
+
+**Uncertainty quantification.**  
+Inference was based on athlete-level bootstrap confidence intervals.
+Sensitivity analyses using exchangeable and AR(1) within-athlete correlation
+structures were conducted.
+
+---
+
+### Research Question 3: Information loss
+
+**How much tibial impact load variability remains unexplained after
+accounting for PlayerLoad?**
+
+This question quantifies the information lost when relying on a global load
+metric alone.
+
+**Statistical analysis.**  
+Using the model above, unexplained variability was assessed through:
+- within-athlete coefficients of determination, and
+- prediction error measures (e.g., RMSE) for $\text{TIL}_{it}$.
+
+Residuals
+$$
+e_{it} = \text{TIL}_{it} - \widehat{\text{TIL}}_{it}
+$$
+represent tibial loading variation not captured by PlayerLoad.
+
+**Uncertainty quantification.**  
+Prediction error metrics were summarized using athlete-level bootstrap
+resampling.
+
+---
+
+### Research Question 4: Bilateral asymmetry
+
+**Do athletes exhibit systematic left–right differences in tibial impact
+load, and are these differences related to PlayerLoad?**
+
+This question addresses information that cannot be recovered from PlayerLoad
+by design.
+
+**Statistical analysis.**  
+Tibial loading asymmetry was defined as
+$$
+D_{it} = \text{TIL}_{R,it} - \text{TIL}_{L,it}.
+$$
+
+A longitudinal model was fitted:
+$$
+D_{it}
+=
+\alpha_i
++
+\gamma \, \text{PL}_{it}^\ast
++
+f(t)
++
+\varepsilon_{it},
+$$
+to assess systematic asymmetry and its association with PlayerLoad.
+
+**Uncertainty quantification.**  
+Athlete-level bootstrap confidence intervals were used. Alternative asymmetry
+definitions (absolute difference and log ratio) were examined as sensitivity
+analyses.
+
+---
+
+### Research Question 5: Conditional divergence
+
+**Under what athlete–weeks do PlayerLoad and tibial impact load diverge most
+strongly?**
+
+This exploratory question identifies contexts in which global and local load
+metrics disagree.
+
+**Statistical analysis.**  
+Divergence was characterized by examining the magnitude of residuals
+$|e_{it}|$ across athlete–weeks and summarizing patterns descriptively by
+athlete and week.
+
+**Uncertainty quantification.**  
+This analysis was descriptive; robustness was assessed by sensitivity
+analyses excluding potentially influential athlete–weeks.
